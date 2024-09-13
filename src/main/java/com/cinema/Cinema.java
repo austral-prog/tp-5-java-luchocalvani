@@ -6,7 +6,9 @@ import java.util.ArrayList;
  * Clase que representa una sala de cine.
  */
 public class Cinema {
-
+    /**
+     * seats = [[Seat (tiene fila y numero y si esta ocupada o no), Seat, Seat],[Seat, Seat, Seat]]
+     */
     private Seat[][] seats;
 
     /**
@@ -38,21 +40,43 @@ public class Cinema {
      * Cuenta la cantidad de seats disponibles en el cine.
      */
     public int countAvailableSeats() {
-        ...
+        int count = 0;
+        for (int fila = 0; fila < seats.length; fila++){
+            for (int butaca = 0; butaca < seats[fila].length; butaca++){
+                if (seats[fila][butaca].isAvailable()){
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     /**
      * Busca la primera butaca libre dentro de una fila o null si no encuentra.
      */
     public Seat findFirstAvailableSeatInRow(int row) {
-        ...
+        if (row > seats.length || row < 0){
+            return null;}
+        for (Seat butaca : seats[row]){
+            if (butaca.isAvailable()){
+                return butaca;
+            }
+        }
+        return null;
     }
 
     /**
      * Busca la primera butaca libre o null si no encuentra.
      */
     public Seat findFirstAvailableSeat() {
-        ...
+        for (int fila = 0; fila < seats.length; fila++){
+            for (int butaca = 0; butaca < seats[fila].length; butaca++){
+                if (seats[fila][butaca].isAvailable()){
+                    return seats[fila][butaca];
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -63,7 +87,20 @@ public class Cinema {
      * @return La primer butaca de la serie de N butacas, si no hay retorna null.
      */
     public Seat getAvailableSeatsInRow(int row, int amount) {
-        ...
+        int count = 0;
+        for (Seat butaca : seats[row]){
+            if (butaca.isAvailable()){
+                count++;
+                if (count == amount){
+                    int num = butaca.getSeatNumber() - amount + 1;
+                    return seats[row][num];
+                }
+            }
+            else{
+                count = 0;
+            }
+        }
+        return null;
     }
 
     /**
@@ -73,7 +110,22 @@ public class Cinema {
      * @param amount el número de butacas pedidas.
      */
     public Seat getAvailableSeats(int amount) {
-        ...
+        int count = 0;
+        for (int fila = 0; fila < seats.length; fila++){
+            for (Seat butaca : seats[fila]){
+                if (butaca.isAvailable()){
+                    count++;
+                    if (count == amount){
+                        int num = butaca.getSeatNumber() - amount + 1;
+                        return seats[fila][num];
+                    }
+                }
+                else{
+                    count = 0;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -83,7 +135,16 @@ public class Cinema {
      * @param amount la cantidad de butacas a reservar.
      */
     public void takeSeats(Seat seat, int amount) {
-        ...
+        int fila = seat.getRow();
+        int num = seat.getSeatNumber();
+        if (amount > seats[fila].length){
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        for (Seat butaca : seats[fila]){
+            if (butaca.getSeatNumber() >= num && butaca.getSeatNumber() <= num + amount - 1){
+                butaca.takeSeat();
+            }
+        }
     }
 
     /**
@@ -93,6 +154,15 @@ public class Cinema {
      * @param amount la cantidad de butacas a liberar.
      */
     public void releaseSeats(Seat seat, int amount) {
-        ...
+        int fila = seat.getRow();
+        int num = seat.getSeatNumber();
+        if (amount > seats[fila].length){
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        for (Seat butaca : seats[fila]){
+            if (butaca.getSeatNumber() >= num && !butaca.isAvailable()){
+                butaca.releaseSeat();
+            }
+        }
     }
 }
